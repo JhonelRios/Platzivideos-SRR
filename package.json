@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "NODE_ENV=production webpack-cli --config webpack.config.js",
+        "build": "rm -rf src/server/public/assets/ src/server/public/manifest.json && NODE_ENV=production webpack-cli --config webpack.config.js",
         "start": "NODE_ENV=production node src/server/index.js",
         "dev": "nodemon src/server/index.js",
         "test": "jest",
