@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
-
 export const setFavorite = payload => ({
     type: 'SET_FAVORITE',
     payload
@@ -41,7 +39,7 @@ export const registerUser = (payload, redirectUrl) => {
     return async (dispatch) => {
         try {
             const { data } = await axios({
-                url: `${API_URL}/auth/sign-up`,
+                url: `/auth/sign-up`,
                 method: 'post',
                 data: payload
             });
@@ -60,7 +58,7 @@ export const loginUser = (payload, redirectUrl) => {
 
         try {
             const { data } = await axios({
-                url: `${API_URL}/auth/sign-in`,
+                url: `/auth/sign-in`,
                 withCredentials: true,
                 method: 'post',
                 auth: {
@@ -87,7 +85,7 @@ export const setUserFavorite = (payload) => {
 
         try {
             const { data } = await axios({
-                url: `${API_URL}/user-movies`,
+                url: `/user-movies`,
                 withCredentials: true,
                 method: 'post',
                 data: { movieId }
@@ -106,7 +104,7 @@ export const deleteUserFavorite = (payload) => {
 
         try {
             const { data } = await axios({
-                url: `${API_URL}/user-movies/${movieId}`,
+                url: `/user-movies/${movieId}`,
                 withCredentials: true,
                 method: 'delete'
             });

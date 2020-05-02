@@ -1,11 +1,12 @@
 // Requerimos el modulo de path y el html-webpack-plugin que instalamos
 const path = require('path');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // Creamos un modulo que vamos a exportar con la siguiente configuración
 module.exports = {
-    entry: './src/index.js', // Iniciamos por la entrada del proyecto
+    entry: ['./src/frontend/index.js', 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true'], // Iniciamos por la entrada del proyecto
+    mode: 'development',
     output: {
         // Definimos donde vamos a guardar los archivos resultantes después de hacer el build
         // __dirname hace referencia al directorio actual y dist es una nueva carpeta que crearemos
@@ -68,14 +69,9 @@ module.exports = {
     // Se añaden los plugins que usaremos
     plugins: [
         // Creamos una nueva instancia del plugin importado
-        new HtmlWebPackPlugin({
-            // Ubicación del template que usaremos
-            template: './public/index.html',
-            // El nombre que va a tener
-            filename: './index.html'
-        }),
         new MiniCssExtractPlugin({
             filename: 'assets/[name].css'
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin()
     ]
 };
