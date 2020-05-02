@@ -1,6 +1,7 @@
+const path = require('path');
 const express = require('express');
 const webpack = require('webpack');
-const session = require('express-session');
+const session = require('cookie-session');
 const passport = require('passport');
 const boom = require('@hapi/boom');
 const cookieParser = require('cookie-parser');
@@ -9,6 +10,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const { config } = require('./config');
+const getManifest = require('./utils/getManifest');
 
 // SSR
 import React from 'react';
@@ -25,15 +27,18 @@ import initialState from '../frontend/initialState';
 const app = express();
 
 // Middlewares
-app.use(cors({ credentials: true, origin: 'http://localhost:8080' }));
+app.use(cors());
 app.use(helmet());
+app.use(helmet.permittedCrossDomainPolicies());
 app.use(express.json());
 app.use(cookieParser());
 app.use(
     session({
         secret: config.sessionSecret,
-        resave: false,
-        saveUninitialized: false
+        cookie: {
+            httpOnly: !config.dev,
+            secure: !config.dev
+        }
     })
 );
 app.use(passport.initialize());
@@ -49,20 +54,31 @@ if (config.dev) {
 
     app.use(webpackDevMiddleware(compiler, serverConfig));
     app.use(webpackHotMiddleware(compiler));
+} else {
+    app.use((req, res, next) => {
+        if (!req.hashManifest) req.hashManifest = getManifest();
+        next();
+    });
+    app.use(express.static(path.resolve(__dirname, 'public')));
+    app.disable('x-powered-by');
 }
 
 // *** SSR IMPLEMENTATION ***
 
 // HTML with our App response as a string
-const setResponse = (html, preloadedState) => {
+const setResponse = (html, preloadedState, manifest) => {
+    const mainStyles = manifest ? manifest['main.css'] : 'assets/main.css';
+    const mainScripts = manifest ? manifest['main.js'] : 'assets/bundle.js';
+    const mainVendors = manifest ? manifest['vendors.js'] : 'assets/vendor.js';
+    
     return `
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="es">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>PlatziVideo</title>
-            <link rel="stylesheet" href="assets/main.css" type="text/css">
+            <link rel="stylesheet" href="${mainStyles}" type="text/css">
         </head>
         <body>
             <div id="app">${html}</div>
@@ -71,7 +87,8 @@ const setResponse = (html, preloadedState) => {
                     preloadedState
                 ).replace(/</g, '\\u003c')}
             </script>
-            <script src="bundle.js" type="text/javascript"></script>
+            <script src="${mainScripts}" type="text/javascript"></script>
+            <script src="${mainVendors}" type="text/javascript"></script>
         </body>
         </html>
     `;
@@ -89,7 +106,7 @@ const renderApp = (req, res) => {
         </Provider>
     );
 
-    res.send(setResponse(html, preloadedState));
+    res.send(setResponse(html, preloadedState, req.hashManifest));
 };
 
 // Rout to render our App

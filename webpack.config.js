@@ -2,21 +2,58 @@
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+
+const { config } = require('./src/server/config');
+
+const entry = ['./src/frontend/index.js'];
+
+if (config.dev) {
+    entry.push(
+        'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true'
+    );
+}
 
 // Creamos un modulo que vamos a exportar con la siguiente configuración
 module.exports = {
-    entry: ['./src/frontend/index.js', 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true'], // Iniciamos por la entrada del proyecto
-    mode: 'development',
+    entry, // Iniciamos por la entrada del proyecto
+    mode: config.dev ? 'development' : 'production',
     output: {
         // Definimos donde vamos a guardar los archivos resultantes después de hacer el build
         // __dirname hace referencia al directorio actual y dist es una nueva carpeta que crearemos
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js', // El nombre del archivo resultante.
+        path: path.resolve(__dirname, 'src/server/public'),
+        filename: config.dev ? 'assets/bundle.js' : 'assets/bundle-[hash].js', // El nombre del archivo resultante.
         publicPath: '/'
     },
     resolve: {
         // Resuelve las extensiones que vamos a utilizar
         extensions: ['.js', '.jsx']
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()],
+        splitChunks: {
+            chunks: 'async',
+            name: true,
+            cacheGroups: {
+                vendors: {
+                    name: 'vendors',
+                    chunks: 'all',
+                    reuseExistingChunk: true,
+                    priority: 1,
+                    filename: config.dev
+                        ? 'assets/vendor.js'
+                        : 'assets/vendor-[hash].js',
+                    enforce: true,
+                    test(module, chunks) {
+                        const name = module.nameForCondition && module.nameForCondition();
+                        return chunks.some(chunk => chunk.name !== 'vendors' && /[\\/]node_modules[\\/]/.test(name));
+                    }
+                }
+            }
+        }
     },
     // Modulo de reglas necesarias
     module: {
@@ -30,15 +67,6 @@ module.exports = {
                 use: {
                     loader: 'babel-loader'
                 }
-            },
-            {
-                // Igual que el anterio pero con html
-                test: /\.html$/,
-                use: [
-                    {
-                        loader: 'html-loader'
-                    }
-                ]
             },
             {
                 test: /\.(s*)css$/,
@@ -70,8 +98,17 @@ module.exports = {
     plugins: [
         // Creamos una nueva instancia del plugin importado
         new MiniCssExtractPlugin({
-            filename: 'assets/[name].css'
+            filename: config.dev
+                ? 'assets/[name].css'
+                : 'assets/[name]-[hash].css'
         }),
-        new webpack.HotModuleReplacementPlugin()
+        config.dev ? new webpack.HotModuleReplacementPlugin() : () => {},
+        config.dev
+            ? () => {}
+            : new CompressionWebpackPlugin({
+                  test: /\.(js|css)$/,
+                  filename: '[path].gz'
+              }),
+        config.dev ? () => {} : new ManifestPlugin()
     ]
 };
