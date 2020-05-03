@@ -5,24 +5,23 @@ import { registerUser } from '../actions';
 import Header from '../components/Header';
 import '../assets/styles/components/Login.scss';
 
-const Register = props => {
+const Register = (props) => {
     const [form, setValues] = useState({
         name: '',
         email: '',
         password: ''
     });
 
-    const handleInput = event => {
+    const handleInput = (event) => {
         setValues({
             ...form,
             [event.target.name]: event.target.value
         });
     };
 
-    const handleSubmit = event => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-        props.registerUser(form, '/');
-        // props.history.push('/');
+        props.registerUser(form, '/login');
     };
 
     return (
@@ -33,8 +32,7 @@ const Register = props => {
                     <h2>Regístrate</h2>
                     <form
                         className="login__container--form"
-                        onSubmit={handleSubmit}
-                    >
+                        onSubmit={handleSubmit}>
                         <input
                             name="name"
                             className="inputLoginForm"
@@ -56,7 +54,9 @@ const Register = props => {
                             placeholder="Contraseña"
                             onChange={handleInput}
                         />
-                        <button className="button">Regístrame</button>
+                        <button className="button" type="submit">
+                            Regístrame
+                        </button>
                     </form>
                     <p className="login__container--login">
                         <Link to="/login">Iniciar sesión</Link>

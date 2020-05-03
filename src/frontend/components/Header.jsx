@@ -9,7 +9,7 @@ import '../assets/styles/components/Header.scss';
 import logo from '../assets/static/logo-platzi-video.png';
 import userIcon from '../assets/static/usuario-64.png';
 
-const Header = props => {
+const Header = (props) => {
     const { user, isLogin, isRegister } = props;
     const hasUser = Object.keys(user).length > 0;
 
@@ -22,9 +22,9 @@ const Header = props => {
         document.cookie = 'email=';
         document.cookie = 'name=';
         document.cookie = 'id=';
-        document.cookie = 'token='
+        document.cookie = 'token=';
         props.logoutRequest({});
-        window.location.href = '/';
+        window.location.href = '/login';
     };
 
     return (
@@ -35,28 +35,36 @@ const Header = props => {
 
             <div className="header__menu">
                 <div className="header__menu--profile">
-                    {hasUser ? 
-                        <img src={gravatar(user.email)} alt={user.email} /> :
+                    {hasUser ? (
+                        <img src={gravatar(user.email)} alt={user.email} />
+                    ) : (
                         <img src={userIcon} alt="Profile Image" />
-                    }
+                    )}
                     <p>Perfil</p>
                 </div>
                 <ul>
-
-                    {hasUser ?
+                    {hasUser ? (
                         <li>
                             <Link to="/">{user.name}</Link>
-                        </li> :
-                        null
-                    }
-
-                    {hasUser ?
-                        <li><a href="#logout" onClick={handleLogout}>Cerrar Sesión</a></li> :
-                        <li>
-                            <Link to="/login">Iniciar Sesión</Link>
                         </li>
-                    }
+                    ) : null}
 
+                    {hasUser ? (
+                        <li>
+                            <a href="#logout" onClick={handleLogout}>
+                                Cerrar Sesión
+                            </a>
+                        </li>
+                    ) : (
+                        <>
+                            <li>
+                                <Link to="/login">Iniciar Sesión</Link>
+                            </li>
+                            <li>
+                                <Link to="/register">Registrarse</Link>
+                            </li>
+                        </>
+                    )}
                 </ul>
             </div>
         </header>
@@ -68,7 +76,7 @@ Header.propTypes = {
     logoutRequest: PropTypes.func
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return {
         user: state.user
     };

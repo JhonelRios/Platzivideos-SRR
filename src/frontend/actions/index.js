@@ -39,7 +39,7 @@ export const registerUser = (payload, redirectUrl) => {
     return async (dispatch) => {
         try {
             const { data } = await axios({
-                url: `/auth/sign-up`,
+                url: '/auth/sign-up',
                 method: 'post',
                 data: payload
             });
@@ -59,7 +59,6 @@ export const loginUser = (payload, redirectUrl) => {
         try {
             const { data } = await axios({
                 url: `/auth/sign-in`,
-                withCredentials: true,
                 method: 'post',
                 auth: {
                     username: email,
@@ -84,9 +83,8 @@ export const setUserFavorite = (payload) => {
         const { _id: movieId } = payload
 
         try {
-            const { data } = await axios({
-                url: `/user-movies`,
-                withCredentials: true,
+            await axios({
+                url: '/user-movies',
                 method: 'post',
                 data: { movieId }
             });

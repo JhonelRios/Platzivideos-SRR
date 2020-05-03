@@ -19,7 +19,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { StaticRouter } from 'react-router-dom';
 import { renderRoutes } from 'react-router-config';
-import routes from '../frontend/routes/serverRoutes';
+import serverRoutes from '../frontend/routes/serverRoutes';
 import reducer from '../frontend/reducers';
 import initialState from '../frontend/initialState';
 
@@ -67,10 +67,10 @@ if (config.dev) {
 
 // HTML with our App response as a string
 const setResponse = (html, preloadedState, manifest) => {
-    const mainStyles = manifest ? manifest['main.css'] : 'assets/main.css';
-    const mainScripts = manifest ? manifest['main.js'] : 'assets/bundle.js';
-    const mainVendors = manifest ? manifest['vendors.js'] : 'assets/vendor.js';
-    
+    const mainStyles = manifest ? manifest['main.css'] : '/assets/main.css';
+    const mainScripts = manifest ? manifest['main.js'] : '/assets/bundle.js';
+    const mainVendors = manifest ? manifest['vendors.js'] : '/assets/vendor.js';
+
     return `
         <!DOCTYPE html>
         <html lang="es">
@@ -95,13 +95,93 @@ const setResponse = (html, preloadedState, manifest) => {
 };
 
 // Render React App function
-const renderApp = (req, res) => {
-    const store = createStore(reducer, initialState);
+const renderApp = async (req, res) => {
+    let state, trends, originals;
+    const { email, name, id, token } = req.cookies;
+
+    // Function to find the matching movies from trends or originals and userMoviesList
+    const matchMovie = (movie, userMoviesList) => {
+        const [movieMatched] = userMoviesList.filter(
+            (userMovie) => userMovie._id === movie._id
+        );
+
+        if (movieMatched) {
+            return !movie._id === movieMatched._id;
+        }
+
+        return true;
+    };
+
+    try {
+        let { data: moviesList } = await axios({
+            url: `${config.apiUrl}/api/movies`,
+            headers: { Authorization: `Bearer ${token}` },
+            method: 'get'
+        });
+
+        let { data: userMoviesIds } = await axios({
+            url: `${config.apiUrl}/api/user-movies`,
+            headers: { Authorization: `Bearer ${token}` },
+            method: 'get',
+            data: { id }
+        });
+
+        moviesList = moviesList.data;
+        userMoviesIds = userMoviesIds.data;
+
+        // Find the array of matching movies from userMoviesList and userMoviesIds
+        const userMoviesList = moviesList.filter((movie) => {
+            const [movieMatched] = userMoviesIds.filter(
+                (movieId) => movieId.movieId === movie._id
+            );
+
+            if (movieMatched) {
+                return movie._id === movieMatched.movieId;
+            }
+
+            return false;
+        });
+
+        // Filter the trends and original arrays from moviesList
+        trends = moviesList.filter(
+            (movie) => movie.contentRating === 'PG' && movie._id
+        );
+        originals = moviesList.filter(
+            (movie) => movie.contentRating === 'G' && movie._id
+        );
+
+        // Verify the existence at least of one userMovie
+        if (userMoviesList.length > 0) {
+            // If exists, filter the trends and originals array to prevent a movie from repeating
+            trends = trends.filter((movie) =>
+                matchMovie(movie, userMoviesList)
+            );
+            originals = originals.filter((movie) =>
+                matchMovie(movie, userMoviesList)
+            );
+        }
+
+        // Create the state
+        state = {
+            ...initialState,
+            user: { email, name, id },
+            mylist: userMoviesList || [],
+            trends: trends,
+            originals: originals
+        };
+    } catch (error) {
+        state = initialState;
+        console.log(error);
+    }
+
+    const store = createStore(reducer, state);
     const preloadedState = store.getState();
+    const isLogged = state.user.id;
+
     const html = renderToString(
         <Provider store={store}>
             <StaticRouter location={req.url} context={{}}>
-                {renderRoutes(routes)}
+                {renderRoutes(serverRoutes(isLogged))}
             </StaticRouter>
         </Provider>
     );
@@ -168,27 +248,6 @@ app.post('/auth/sign-up', async (req, res, next) => {
             email: user.email,
             id: data.data
         });
-    } catch (error) {
-        next(error);
-    }
-});
-
-app.get('/user-movies', async (req, res, next) => {
-    try {
-        const { token, id: userId } = req.cookies;
-
-        const { data, status } = await axios({
-            url: `${config.apiUrl}/api/user-movies`,
-            headers: { Authorization: `Bearer ${token}` },
-            method: 'get',
-            data: { userId }
-        });
-
-        if (status !== 200) {
-            return next(boom.badImplementation());
-        }
-
-        res.status(200).json(data);
     } catch (error) {
         next(error);
     }

@@ -285,7 +285,7 @@ import App from './routes/App';
     ReactDOM.hydrate(
         <Provider store={store}>
             <Router history={history}>
-                <App isLogged={preloadedState.user.id} />
+                <App isLogged={(preloadedState.user.id)} />
             </Router>
         </Provider>,
 

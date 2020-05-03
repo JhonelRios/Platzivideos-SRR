@@ -10,7 +10,7 @@ const reducer = (state, action) => {
         case 'DELETE_FAVORITE':
             let trends, originals;    
 
-            if (action.payload.contentRating === 'R') {
+            if (action.payload.contentRating === 'PG') {
                 trends = [...state.trends, action.payload];
                 originals = state.originals; 
             } else if (action.payload.contentRating === 'G') {
