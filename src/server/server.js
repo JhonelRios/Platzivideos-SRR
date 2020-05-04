@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
 const webpack = require('webpack');
-const session = require('cookie-session');
+const session = require('express-session');
 const passport = require('passport');
 const boom = require('@hapi/boom');
 const cookieParser = require('cookie-parser');
@@ -35,10 +35,8 @@ app.use(cookieParser());
 app.use(
     session({
         secret: config.sessionSecret,
-        cookie: {
-            httpOnly: !config.dev,
-            secure: !config.dev
-        }
+        resave: false,
+        saveUninitialized: false
     })
 );
 app.use(passport.initialize());
