@@ -168,6 +168,7 @@ const renderApp = async (req, res) => {
             originals: originals
         };
     } catch (error) {
+        req.session = null;
         state = initialState;
         console.log(error);
     }
