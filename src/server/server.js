@@ -168,7 +168,10 @@ const renderApp = async (req, res) => {
             originals: originals
         };
     } catch (error) {
-        res.clearCookie('token');
+        res.cookie('token', '', {
+            httpOnly: !config.dev,
+            secure: !config.dev
+        });
         state = initialState;
         console.log(error);
     }
