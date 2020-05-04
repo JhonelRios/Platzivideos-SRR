@@ -1,36 +1,36 @@
 import axios from 'axios';
 
-export const setFavorite = payload => ({
+export const setFavorite = (payload) => ({
     type: 'SET_FAVORITE',
     payload
 });
 
-export const deleteFavorite = payload => ({
+export const deleteFavorite = (payload) => ({
     type: 'DELETE_FAVORITE',
     payload
 });
 
-export const loginRequest = payload => ({
+export const loginRequest = (payload) => ({
     type: 'LOGIN_REQUEST',
     payload
 });
 
-export const logoutRequest = payload => ({
+export const logoutRequest = (payload) => ({
     type: 'LOGOUT_REQUEST',
     payload
 });
 
-export const registerRequest = payload => ({
+export const registerRequest = (payload) => ({
     type: 'REGISTER_REQUEST',
     payload
 });
 
-export const getVideoSource = payload => ({
+export const getVideoSource = (payload) => ({
     type: 'GET_VIDEO_SOURCE',
     payload
 });
 
-export const searchVideo = payload => ({
+export const searchVideo = (payload) => ({
     type: 'SEARCH_VIDEO',
     payload
 });
@@ -75,12 +75,12 @@ export const loginUser = (payload, redirectUrl) => {
         } catch (error) {
             console.log(new Error(error));
         }
-    }
-}
+    };
+};
 
 export const setUserFavorite = (payload) => {
     return async (dispatch) => {
-        const { _id: movieId } = payload
+        const { _id: movieId } = payload;
 
         try {
             await axios({
@@ -93,8 +93,8 @@ export const setUserFavorite = (payload) => {
         } catch (error) {
             console.log(new Error(error));
         }
-    }
-}
+    };
+};
 
 export const deleteUserFavorite = (payload) => {
     return async (dispatch) => {
@@ -111,5 +111,21 @@ export const deleteUserFavorite = (payload) => {
         } catch (error) {
             console.log(new Error(error));
         }
-    }
-}
+    };
+};
+
+export const logoutUser = (payload, redirectUrl) => {
+    return async (dispatch) => {
+        try {
+            await axios({
+                url: '/logout',
+                method: 'get'
+            });
+
+            dispatch(logoutRequest(payload));
+            window.location.href = redirectUrl;
+        } catch (error) {
+            console.log(new Error(error));
+        }
+    };
+};

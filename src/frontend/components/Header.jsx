@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import gravatar from '../utils/gravatar';
-import { logoutRequest } from '../actions';
+import { logoutUser } from '../actions';
 import classNames from 'classnames';
 import '../assets/styles/components/Header.scss';
 import logo from '../assets/static/logo-platzi-video.png';
@@ -23,8 +23,7 @@ const Header = (props) => {
         document.cookie = 'name=';
         document.cookie = 'id=';
         document.cookie = 'token=';
-        props.logoutRequest({});
-        window.location.href = '/login';
+        props.logoutUser({}, '/login');
     };
 
     return (
@@ -73,7 +72,7 @@ const Header = (props) => {
 
 Header.propTypes = {
     user: PropTypes.object,
-    logoutRequest: PropTypes.func
+    logoutUser: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
@@ -83,7 +82,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-    logoutRequest
+    logoutUser
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

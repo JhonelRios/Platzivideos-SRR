@@ -168,10 +168,6 @@ const renderApp = async (req, res) => {
             originals: originals
         };
     } catch (error) {
-        res.cookie('token', '', {
-            httpOnly: !config.dev,
-            secure: !config.dev
-        });
         state = initialState;
         console.log(error);
     }
@@ -233,6 +229,11 @@ app.post('/auth/sign-in', async (req, res, next) => {
             next(error);
         }
     })(req, res, next);
+});
+
+app.get('/logout', function (req, res) {
+    req.logout();
+    res.clearCookie('token')
 });
 
 app.post('/auth/sign-up', async (req, res, next) => {
