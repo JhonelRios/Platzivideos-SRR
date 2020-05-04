@@ -50,7 +50,7 @@ const Header = (props) => {
 
                     {hasUser ? (
                         <li>
-                            <a href="#logout" onClick={handleLogout}>
+                            <a href="/logout" onClick={handleLogout}>
                                 Cerrar Sesión
                             </a>
                         </li>

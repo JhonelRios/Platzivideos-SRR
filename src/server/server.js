@@ -233,7 +233,8 @@ app.get('/logout', function (req, res) {
     res.cookie('token', '', {
         httpOnly: !config.dev,
         secure: !config.dev
-    })
+    });
+    res.redirect('/login');
 });
 
 app.post('/auth/sign-up', async (req, res, next) => {
