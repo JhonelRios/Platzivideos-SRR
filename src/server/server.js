@@ -35,6 +35,7 @@ app.use(cookieParser());
 app.use(
     session({
         secret: config.sessionSecret,
+        keys: ['prueba', 'test'],
         cookie: {
             httpOnly: !config.dev,
             secure: !config.dev
