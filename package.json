@@ -2,7 +2,7 @@
     "name": "PlatziVideo",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "src/server/index.js",
     "scripts": {
         "build": "rm -rf src/server/public/assets/ src/server/public/manifest.json && NODE_ENV=production webpack-cli --config webpack.config.js",
         "start": "NODE_ENV=production node src/server/index.js",
@@ -25,6 +25,9 @@
     "author": "Jhonel Rios Jaimes <riosjaimes.j@gmail.com>",
     "license": "MIT",
     "dependencies": {
+        "@babel/preset-env": "^7.8.6",
+        "@babel/preset-react": "^7.8.3",
+        "@babel/register": "^7.9.0",
         "@hapi/boom": "^9.1.0",
         "asset-require-hook": "^1.2.0",
         "axios": "^0.19.2",
@@ -59,9 +62,6 @@
     },
     "devDependencies": {
         "@babel/core": "^7.8.6",
-        "@babel/preset-env": "^7.8.6",
-        "@babel/preset-react": "^7.8.3",
-        "@babel/register": "^7.9.0",
         "babel-eslint": "^10.1.0",
         "babel-jest": "^25.3.0",
         "babel-loader": "^8.0.6",
