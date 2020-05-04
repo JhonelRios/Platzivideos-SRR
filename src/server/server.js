@@ -36,10 +36,8 @@ app.use(
     session({
         secret: config.sessionSecret,
         keys: ['prueba', 'test'],
-        cookie: {
-            httpOnly: !config.dev,
-            secure: !config.dev
-        }
+        httpOnly: !config.dev,
+        secure: !config.dev
     })
 );
 app.use(passport.initialize());
