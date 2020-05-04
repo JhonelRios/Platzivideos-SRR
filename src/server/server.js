@@ -35,8 +35,10 @@ app.use(cookieParser());
 app.use(
     session({
         secret: config.sessionSecret,
-        httpOnly: !config.dev,
-        secure: !config.dev
+        cookie: {
+            httpOnly: !config.dev,
+            secure: !config.dev
+        }
     })
 );
 app.use(passport.initialize());
