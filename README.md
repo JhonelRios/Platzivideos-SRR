@@ -1,5 +1,7 @@
 # PlatziVideo
-Proyecto final de la Carrera de JavaScript de Platzi
+Proyecto final de la Carrera de JavaScript de Platzi.
+
+El link del proyecto: [PlatziVideo](https://my-platzivideo-app.herokuapp.com)
 
 # Cómo funciona
   * `npm install` para instalar las dependencias.
