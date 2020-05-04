@@ -168,7 +168,7 @@ const renderApp = async (req, res) => {
             originals: originals
         };
     } catch (error) {
-        req.session = null;
+        req.clearCookie('token');
         state = initialState;
         console.log(error);
     }
