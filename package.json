@@ -21,6 +21,9 @@
             "\\.(css|scss|sass)$": "<rootDir>/src/frontend/__mocks__/styleMock.js"
         }
     },
+    "engines": {
+        "node": "12.16.x"
+    },
     "keywords": [],
     "author": "Jhonel Rios Jaimes <riosjaimes.j@gmail.com>",
     "license": "MIT",
