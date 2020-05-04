@@ -187,9 +187,6 @@ const renderApp = async (req, res) => {
     res.send(setResponse(html, preloadedState, req.hashManifest));
 };
 
-// Rout to render our App
-app.get('*', renderApp);
-
 // *** API REQUESTS ***
 
 // Basic Strategy
@@ -233,7 +230,10 @@ app.post('/auth/sign-in', async (req, res, next) => {
 
 app.get('/logout', function (req, res) {
     req.logout();
-    res.clearCookie('token')
+    res.cookie('token', '', {
+        httpOnly: !config.dev,
+        secure: !config.dev
+    })
 });
 
 app.post('/auth/sign-up', async (req, res, next) => {
@@ -387,6 +387,9 @@ app.get(
         res.status(200).json(user);
     }
 );
+
+// Rout to render our App
+app.get('*', renderApp);
 
 app.listen(config.port, () => {
     console.log(`Escuchando en http://localhost:${config.port}`);
