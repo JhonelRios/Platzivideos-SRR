@@ -12,9 +12,13 @@
         "test:coverage": "jest --coverage"
     },
     "jest": {
+        "verbose": true,
+        "setupFilesAfterEnv": [
+            "<rootDir>/src/frontend/__test__/setupTest.js"
+        ],
         "moduleNameMapper": {
-            "\\.(jpg|jpeg|png|gif)$": "<rootDir>/src/__mocks__/fileMock.js",
-            "\\.(scss|sass)$": "<rootDir>/src/__mocks__/styleMock.js"
+            "\\.(jpg|jpeg|png|gif)$": "<rootDir>/src/frontend/__mocks__/fileMock.js",
+            "\\.(css|scss|sass)$": "<rootDir>/src/frontend/__mocks__/styleMock.js"
         }
     },
     "keywords": [],
